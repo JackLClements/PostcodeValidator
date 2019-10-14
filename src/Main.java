@@ -1,46 +1,57 @@
+import Postcode.PostcodeData;
+import Postcode.PostcodeService;
+
 import java.util.Scanner;
 
 //Basic Design Notes
 /*
-We want to try and abstract all the URL stuff away from the end-programmer as much as possible.
-Think the AdyenService classes.
-It also makes sense to remove instances of classes away from method calls
-- We could use a singleton w/ getInstance
-- Or we could use a group of static methods loosely contained within a priv. class
+Initial Notes:
+API Input - a String, alphanumeric, generally fitting the valid postcode format
+API Output - JSON object, containing all the necessary information in a formatted, accessible manner,
+from which further commands could potentially be called if need-be
+Exceptions - Postcode.InvalidPostcodeException "Postcode does not fit the accepted format."
+Preprocessing - need to ensure it's just alphanumeric, command can handle the rest
 
-We should also wrap up response data + use a class to parse it.
-Do we want to use a JSON Library? - Yes, use GSON. Rather than muck around trying to parse entire blobs of JSON.
+Assumptions:
+- Only provided one postcode
+- Connection is stable
+- No need to use limited/shared resources
+- Java URL class should always encode " " to %20 automatically
 
-Before we decide on a design pattern let's think about how we'd want the input/output to look.
+Extensions:
+- Implement more commands
+- Extend the Misc.HttpRequester class to be more robust w/ different requests
+- Create a URL Builder enum with specific methods for creating and building a new API URL given just URL params (postcode)
+- Clean up the file folder structure
 
-Input - a String, alphanumeric, generally fitting the valid postcode format
-Output - An object, containing all the necessary information in a formatted, accessible manner,
-from which further commands could potentially be called if need-be (or used to grab output for input)
-Exceptions - InvalidPostcodeException "Postcode does not fit the accepted format."
-Preprocessing for input? - We could use regex, but given the API already has a command
-Security risks? - Potential URL invalidity wrt string building, look into that for the URL before the call
-Other considerations - we potentially want to write a little HTTP wrapper just to make request construction less... painful
+Libraries:
+- GSON
+- JUnit
 
-Java URL classes appear to encode " " to %20 automatically, so no need to parse those
  */
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("Please enter a postcode: ");
         Scanner scan = new Scanner(System.in);
-        PostcodeData[] data = PostcodeService.nearest(scan.nextLine());
-        if(data == null){
-            System.out.println("Could not retrieve postcode data. Please check stack trace for more info.");
-            return;
+        try {
+            PostcodeData[] data = PostcodeService.nearest(scan.nextLine());
+            if (data == null) {
+                System.out.println("Could not retrieve postcode data. Please check stack trace for more info.");
+                return;
+            }
+            for (int i = 0; i < data.length; i++) {
+                if (i == 0)
+                    System.out.println("Your Postcode:");
+                else
+                    System.out.println("Nearby Postcode:");
+                System.out.println("Postcode: " + data[i].getPostcode());
+                System.out.println("Country: " + data[i].getCountry());
+                System.out.println("Region: " + data[i].getRegion());
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); //Ideally we'd exit gracefully, but since this is a simple prototype, this will do.
         }
-        for (int i = 0; i < data.length; i++) {
-            if(i == 0)
-                System.out.println("Your Postcode:");
-            else
-                System.out.println("Nearby Postcode:");
-            System.out.println("Postcode: " + data[i].getPostcode());
-            System.out.println("Country: " + data[i].getCountry());
-            System.out.println("Region: " + data[i].getRegion());
-        }
+
     }
 }

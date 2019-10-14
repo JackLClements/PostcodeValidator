@@ -1,3 +1,5 @@
+package Postcode;
+
 import com.google.gson.JsonObject;
 
 /**
@@ -9,8 +11,10 @@ public class PostcodeData {
     private String country;
     private String region;
 
-    /** Values-based constructor  */
-    public PostcodeData(String postcode, String country, String region){
+    /**
+     * Values-based constructor
+     */
+    public PostcodeData(String postcode, String country, String region) {
         this.postcode = postcode;
         this.country = country;
         this.region = region;
@@ -32,16 +36,18 @@ public class PostcodeData {
     //Mutator Methods
 
     /**
-     * Create a new PostcodeData object from a JsonObject response.
+     * Create a new Postcode.PostcodeData object from a JsonObject response.
      * Assumption - The API is not returning malformed/unexpected data
      * Assumption - We only need the fields specified in the provided challenge document
      * @param obj JsonObject response from postcode lookup commands
-     * @return new isntance of PostcodeData
+     * @return new isntance of Postcode.PostcodeData
      */
     public static PostcodeData fromJSON(JsonObject obj) {
-        String postcode = obj.get("postcode").getAsString(); //TODO - do null checks?
+        String region = "n/a"; //can be null
+        String postcode = obj.get("postcode").getAsString();
         String country = obj.get("country").getAsString();
-        String region = obj.get("region").getAsString();
+        if (!obj.get("region").isJsonNull())
+            region = obj.get("region").getAsString();
         return new PostcodeData(postcode, country, region);
     }
 }
