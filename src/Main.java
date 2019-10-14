@@ -22,7 +22,6 @@ Extensions:
 - Implement more commands
 - Extend the Misc.HttpRequester class to be more robust w/ different requests
 - Create a URL Builder enum with specific methods for creating and building a new API URL given just URL params (postcode)
-- Clean up the file folder structure
 
 Libraries:
 - GSON

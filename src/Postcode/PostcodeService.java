@@ -26,7 +26,6 @@ public class PostcodeService {
             throw new InvalidPostcodeException("Postcode not supplied.");
         if(!pattern.matcher(postcode).matches())
             throw new InvalidPostcodeException(postcode);
-        //shouldn't be any need for internal validation (e.g. regex)
         HttpRequester request = new HttpRequester("http://api.postcodes.io/postcodes/" + postcode + "/validate", "GET", null);
         JsonObject obj = wrapToJson(request.send());
         if (obj.has("result") && obj.get("result").getAsBoolean()) {
